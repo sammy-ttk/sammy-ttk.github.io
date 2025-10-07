@@ -1,0 +1,802 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <link rel="shortcut icon" href="https://64.media.tumblr.com/08bd6a35df253c705d808e1993d25bdf/tumblr_oont88pC4a1w9xelho1_400.gif">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Mapa Interativo de Hollow Knight</title>
+  <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
+  <style>
+    *{margin:0;padding:0;box-sizing:border-box}
+    html,body{height:100%;font-family: 'Press Start 2P', Arial, sans-serif;background:#08080b;color:#e9f6ff}
+
+    .wrapper{min-height:100vh;display:flex;flex-direction:column}
+
+    /* cabeçalho estilo 'pixel' */
+    .cabecalho{
+      background:#071126;
+      color:#cfefff;
+      padding:22px;
+      text-align:center;
+      border-bottom:6px solid #2fc7ff;
+      box-shadow:0 8px 0 rgba(0,0,0,0.6) inset;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .cabecalho::before {
+      content: "";
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='20' height='20' viewBox='0 0 20 20'%3E%3Crect width='2' height='2' fill='%232fc7ff' fill-opacity='0.1'/%3E%3C/svg%3E");
+      z-index: 0;
+    }
+
+    .cabecalho h1{
+      font-size:16px; 
+      letter-spacing:2px;
+      position: relative;
+      z-index: 1;
+      text-shadow: 2px 2px 0 #001b2b;
+    }
+
+    /* menu */
+    .menu{
+      background:#0b1b2a;
+      padding:12px;
+      text-align:center;
+      border-bottom:4px solid #053147;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+    .menu a{
+      color:#cfefff;
+      margin:0 14px;
+      text-decoration:none;
+      display:inline-block;
+      padding:6px 10px;
+      border:3px solid transparent;
+      transition: all .12s;
+      font-size:11px;
+    }
+    .menu a:hover{
+      color:#001b2b;
+      background:#4fc3f7;
+      border-color:#012034;
+      transform:translateY(-2px);
+    }
+
+    /* corpo */
+    .corpo{
+      flex:1;
+      padding:28px;
+      background: linear-gradient(180deg, rgba(2,6,15,0.6), rgba(0,0,0,0.6)), 
+                  url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='40' height='40' viewBox='0 0 40 40'%3E%3Crect width='40' height='40' fill='%23081125'/%3E%3Cpath d='M0 0L40 40M40 0L0 40' stroke='%23050812' stroke-width='1'/%3E%3C/svg%3E");
+      color:#e6f8ff;
+      font-size:12px;
+      line-height:1.6;
+      text-align:center;
+    }
+
+    /* contêiner do mapa */
+    .mapa-container {
+      margin: 30px auto;
+      max-width: 800px;
+      position: relative;
+      overflow: hidden;
+      border: 6px solid #021728;
+      background: #0a1424;
+    }
+
+    .mapa-miniatura {
+      width: 100%;
+      height: 400px;
+      background: #0d1522;
+      position: relative;
+      overflow: hidden;
+    }
+
+    /* Elementos do mapa */
+    .mapa-sala {
+      position: absolute;
+      background-color: #1a243a;
+      border: 2px solid #2fc7ff;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+
+    .mapa-sala:hover {
+      background-color: #2a3f5f;
+      border-color: #4fd7ff;
+    }
+
+    .mapa-caminho {
+      position: absolute;
+      background-color: #2a3f5f;
+    }
+
+    .mapa-rotulo {
+      position: absolute;
+      color: #2fc7ff;
+      font-size: 8px;
+      text-shadow: 1px 1px 0 #000;
+      z-index: 10;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+
+    .mapa-rotulo:hover {
+      color: #4fd7ff;
+      text-shadow: 0 0 5px rgba(79, 215, 255, 0.8);
+    }
+
+    /* Posicionamento das áreas do mapa */
+    .sala-1 { width: 80px; height: 60px; top: 60px; left: 120px; }
+    .sala-2 { width: 100px; height: 70px; top: 150px; left: 100px; }
+    .sala-3 { width: 120px; height: 80px; top: 250px; left: 80px; }
+    .sala-4 { width: 90px; height: 70px; top: 80px; left: 250px; }
+    .sala-5 { width: 110px; height: 90px; top: 170px; left: 230px; }
+    .sala-6 { width: 130px; height: 100px; top: 280px; left: 210px; }
+    .sala-7 { width: 100px; height: 80px; top: 100px; left: 400px; }
+    .sala-8 { width: 120px; height: 90px; top: 200px; left: 380px; }
+    .sala-9 { width: 140px; height: 110px; top: 310px; left: 350px; }
+    .sala-10 { width: 70px; height: 60px; top: 130px; left: 550px; }
+    .sala-11 { width: 90px; height: 70px; top: 210px; left: 530px; }
+    .sala-12 { width: 110px; height: 90px; top: 300px; left: 500px; }
+
+    .caminho-1 { width: 20px; height: 40px; top: 120px; left: 200px; }
+    .caminho-2 { width: 20px; height: 50px; top: 220px; left: 180px; }
+    .caminho-3 { width: 30px; height: 20px; top: 165px; left: 220px; }
+    .caminho-4 { width: 30px; height: 20px; top: 260px; left: 200px; }
+    .caminho-5 { width: 20px; height: 40px; top: 125px; left: 340px; }
+    .caminho-6 { width: 20px; height: 50px; top: 225px; left: 320px; }
+    .caminho-7 { width: 30px; height: 20px; top: 170px; left: 360px; }
+    .caminho-8 { width: 30px; height: 20px; top: 265px; left: 340px; }
+    .caminho-9 { width: 20px; height: 40px; top: 140px; left: 500px; }
+    .caminho-10 { width: 20px; height: 50px; top: 240px; left: 480px; }
+    .caminho-11 { width: 30px; height: 20px; top: 185px; left: 520px; }
+    .caminho-12 { width: 30px; height: 20px; top: 280px; left: 500px; }
+
+    .rotulo-1 { top: 65px; left: 145px; }
+    .rotulo-2 { top: 155px; left: 125px; }
+    .rotulo-3 { top: 255px; left: 105px; }
+    .rotulo-4 { top: 85px; left: 275px; }
+    .rotulo-5 { top: 175px; left: 255px; }
+    .rotulo-6 { top: 285px; left: 235px; }
+    .rotulo-7 { top: 105px; left: 425px; }
+    .rotulo-8 { top: 205px; left: 405px; }
+    .rotulo-9 { top: 315px; left: 375px; }
+    .rotulo-10 { top: 135px; left: 575px; }
+    .rotulo-11 { top: 215px; left: 555px; }
+    .rotulo-12 { top: 305px; left: 525px; }
+
+    /* Painel de detalhes */
+    .detalhes-regiao {
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%) scale(0.9);
+      width: 90%;
+      max-width: 600px;
+      background: rgba(13, 25, 42, 0.95);
+      border: 6px solid #2fc7ff;
+      padding: 20px;
+      z-index: 1000;
+      opacity: 0;
+      visibility: hidden;
+      transition: all 0.3s ease;
+    }
+
+    .detalhes-regiao.ativo {
+      opacity: 1;
+      visibility: visible;
+      transform: translate(-50%, -50%) scale(1);
+    }
+
+    .detalhes-cabecalho {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 20px;
+      border-bottom: 3px solid #2fc7ff;
+      padding-bottom: 10px;
+    }
+
+    .detalhes-titulo {
+      color: #2fc7ff;
+      font-size: 14px;
+      text-shadow: 2px 2px 0 #000;
+    }
+
+    .fechar-detalhes {
+      background: #2fc7ff;
+      color: #001b2b;
+      border: 2px solid #021728;
+      padding: 8px 12px;
+      font-family: 'Press Start 2P', cursive;
+      font-size: 10px;
+      cursor: pointer;
+      transition: all 0.3s;
+    }
+
+    .fechar-detalhes:hover {
+      background: #4fd7ff;
+    }
+
+    .detalhes-conteudo {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 20px;
+    }
+
+    .detalhes-coluna {
+      background: rgba(0, 0, 0, 0.3);
+      padding: 15px;
+      border: 3px solid #021728;
+    }
+
+    .detalhes-subtitulo {
+      color: #2fc7ff;
+      font-size: 10px;
+      margin-bottom: 15px;
+      text-align: center;
+      border-bottom: 2px solid #2fc7ff;
+      padding-bottom: 5px;
+    }
+
+    .detalhes-lista {
+      list-style: none;
+      font-size: 9px;
+      line-height: 1.6;
+    }
+
+    .detalhes-lista li {
+      margin-bottom: 10px;
+      padding-left: 15px;
+      position: relative;
+    }
+
+    .detalhes-lista li::before {
+      content: "•";
+      color: #2fc7ff;
+      position: absolute;
+      left: 0;
+    }
+
+    .dificuldade {
+      display: inline-block;
+      padding: 2px 6px;
+      border-radius: 3px;
+      font-size: 8px;
+      margin-left: 5px;
+    }
+
+    .dificuldade-facil {
+      background: #2d6a2d;
+      color: #b8f7b8;
+    }
+
+    .dificuldade-media {
+      background: #8d6d1d;
+      color: #ffeb99;
+    }
+
+    .dificuldade-dificil {
+      background: #8d2d2d;
+      color: #ffaaaa;
+    }
+
+    .digitando::after {
+      content: "|";
+      animation: piscar 0.7s infinite;
+      color: #2fc7ff;
+    }
+
+    @keyframes piscar {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0; }
+    }
+
+    .overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.8);
+      z-index: 999;
+      opacity: 0;
+      visibility: hidden;
+      transition: all 0.3s ease;
+    }
+
+    .overlay.ativo {
+      opacity: 1;
+      visibility: visible;
+    }
+
+    .instrucoes {
+      margin-top: 20px;
+      font-size: 10px;
+      color: #7fa7b8;
+      text-align: center;
+    }
+
+    /* rodapé */
+    .rodape{
+      background:#071126;
+      color:#7fa7b8;
+      text-align:center;
+      padding:14px;
+      border-top:6px solid #2fc7ff;
+      font-size:10px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .rodape::before {
+      content: "";
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='20' height='20' viewBox='0 0 20 20'%3E%3Crect width='2' height='2' fill='%232fc7ff' fill-opacity='0.05'/%3E%3C/svg%3E");
+      z-index: 0;
+    }
+
+    .rodape p {
+      position: relative;
+      z-index: 1;
+    }
+
+    /* Responsividade */
+    @media (max-width: 768px) {
+      .cabecalho h1 { font-size: 14px; }
+      .menu a { margin: 0 8px; font-size: 10px; }
+      .mapa-container { max-width: 100%; }
+      .mapa-miniatura { height: 300px; }
+      .detalhes-conteudo { grid-template-columns: 1fr; }
+      
+      .sala-1, .sala-2, .sala-3, .sala-4, 
+      .sala-5, .sala-6, .sala-7, .sala-8,
+      .sala-9, .sala-10, .sala-11, .sala-12 {
+        transform: scale(0.7);
+      }
+      
+      .rotulo-1, .rotulo-2, .rotulo-3, .rotulo-4, 
+      .rotulo-5, .rotulo-6, .rotulo-7, .rotulo-8,
+      .rotulo-9, .rotulo-10, .rotulo-11, .rotulo-12 {
+        font-size: 6px;
+      }
+    }
+
+    @media (max-width: 480px) {
+      .cabecalho h1 { font-size: 12px; }
+      .menu a { display: block; margin: 8px 0; }
+      .corpo { padding: 15px; }
+      .mapa-miniatura { height: 250px; }
+      
+      .sala-1, .sala-2, .sala-3, .sala-4, 
+      .sala-5, .sala-6, .sala-7, .sala-8,
+      .sala-9, .sala-10, .sala-11, .sala-12 {
+        transform: scale(0.5);
+      }
+      
+      .rotulo-1, .rotulo-2, .rotulo-3, .rotulo-4, 
+      .rotulo-5, .rotulo-6, .rotulo-7, .rotulo-8,
+      .rotulo-9, .rotulo-10, .rotulo-11, .rotulo-12 {
+        font-size: 4px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="wrapper">
+    <div class="cabecalho">
+      <h1>MAPA INTERATIVO DE HOLLOW KNIGHT</h1>
+    </div>
+
+    <div class="menu">
+      <a href="index.html">INÍCIO</a>
+      <a href="personagens.html">PERSONAGENS</a>
+      <a href="mapa.html">MAPA</a>
+      <a href="galeria.html">GALERIA</a>
+      <a href="contato.html">EXPLICAÇÃO</a>
+      <a href="https://store.steampowered.com/app/367520/Hollow_Knight/" target="_blank">COMPRAR JOGO</a>
+    </div>
+
+    <div class="corpo">
+      <h2>EXPLORE AS ÁREAS DE HALLOWNEST</h2>
+      <p>Clique em qualquer área do mapa para ver detalhes sobre desafios, oponentes e objetivos</p>
+      
+      <div class="mapa-container">
+        <div class="mapa-miniatura" id="mapaMiniatura">
+          <!-- Salas -->
+          <div class="mapa-sala sala-1" data-regiao="cidade-lagrimas"></div>
+          <div class="mapa-sala sala-2" data-regiao="caminho-verde"></div>
+          <div class="mapa-sala sala-3" data-regiao="ninho-profundo"></div>
+          <div class="mapa-sala sala-4" data-regiao="penhasco-uivo"></div>
+          <div class="mapa-sala sala-5" data-regiao="celeiro-fungico"></div>
+          <div class="mapa-sala sala-6" data-regiao="bosque-silencioso"></div>
+          <div class="mapa-sala sala-7" data-regiao="picos-cristalinos"></div>
+          <div class="mapa-sala sala-8" data-regiao="canion-nevoa"></div>
+          <div class="mapa-sala sala-9" data-regiao="terminal-real"></div>
+          <div class="mapa-sala sala-10" data-regiao="jardins-rainha"></div>
+          <div class="mapa-sala sala-11" data-regiao="terra-esquecida"></div>
+          <div class="mapa-sala sala-12" data-regiao="caminho-esquecido"></div>
+          
+          <!-- Caminhos -->
+          <div class="mapa-caminho caminho-1"></div>
+          <div class="mapa-caminho caminho-2"></div>
+          <div class="mapa-caminho caminho-3"></div>
+          <div class="mapa-caminho caminho-4"></div>
+          <div class="mapa-caminho caminho-5"></div>
+          <div class="mapa-caminho caminho-6"></div>
+          <div class="mapa-caminho caminho-7"></div>
+          <div class="mapa-caminho caminho-8"></div>
+          <div class="mapa-caminho caminho-9"></div>
+          <div class="mapa-caminho caminho-10"></div>
+          <div class="mapa-caminho caminho-11"></div>
+          <div class="mapa-caminho caminho-12"></div>
+          
+          <!-- Rótulos -->
+          <div class="mapa-rotulo rotulo-1" data-regiao="cidade-lagrimas">CIDADE DAS LÁGRIMAS</div>
+          <div class="mapa-rotulo rotulo-2" data-regiao="caminho-verde">CAMINHO VERDE</div>
+          <div class="mapa-rotulo rotulo-3" data-regiao="ninho-profundo">NINHO PROFUNDO</div>
+          <div class="mapa-rotulo rotulo-4" data-regiao="penhasco-uivo">PENHASCO DO UIVO</div>
+          <div class="mapa-rotulo rotulo-5" data-regiao="celeiro-fungico">CELEIRO FÚNGICO</div>
+          <div class="mapa-rotulo rotulo-6" data-regiao="bosque-silencioso">BOSQUE SILENCIOSO</div>
+          <div class="mapa-rotulo rotulo-7" data-regiao="picos-cristalinos">PICOS CRISTALINOS</div>
+          <div class="mapa-rotulo rotulo-8" data-regiao="canion-nevoa">CÂNION DA NÉVOA</div>
+          <div class="mapa-rotulo rotulo-9" data-regiao="terminal-real">TERMINAL REAL</div>
+          <div class="mapa-rotulo rotulo-10" data-regiao="jardins-rainha">JARDINS DA RAINHA</div>
+          <div class="mapa-rotulo rotulo-11" data-regiao="terra-esquecida">TERRA ESQUECIDA</div>
+          <div class="mapa-rotulo rotulo-12" data-regiao="caminho-esquecido">CAMINHO ESQUECIDO</div>
+        </div>
+      </div>
+      
+      <div class="instrucoes">
+        <p>CLIQUE EM QUALQUER ÁREA DO MAPA PARA VER DETALHES | CLIQUE EM QUALQUER LUGAR PARA FECHAR</p>
+      </div>
+    </div>
+
+    <!-- Overlay para escurecer o fundo -->
+    <div class="overlay" id="overlay"></div>
+
+    <!-- Painel de detalhes da região -->
+    <div class="detalhes-regiao" id="detalhesRegiao">
+      <div class="detalhes-cabecalho">
+        <h3 class="detalhes-titulo" id="detalhesTitulo"></h3>
+        <button class="fechar-detalhes" id="fecharDetalhes">FECHAR [X]</button>
+      </div>
+      
+      <div class="detalhes-conteudo">
+        <div class="detalhes-coluna">
+          <h4 class="detalhes-subtitulo">DESAFIOS E OPONENTES</h4>
+          <ul class="detalhes-lista" id="detalhesOponentes">
+            <!-- Conteúdo preenchido por JavaScript -->
+          </ul>
+        </div>
+        
+        <div class="detalhes-coluna">
+          <h4 class="detalhes-subtitulo">OBJETIVOS E RECOMPENSAS</h4>
+          <ul class="detalhes-lista" id="detalhesObjetivos">
+            <!-- Conteúdo preenchido por JavaScript -->
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <div class="rodape">
+      <p>Todos os direitos reservados © 2025 | Hollow Knight é uma propriedade da Emilly</p>
+    </div>
+  </div>
+
+  <script>
+    // Dados das regiões
+    const regioes = {
+      "cidade-lagrimas": {
+        nome: "CIDADE DAS LÁGRIMAS",
+        oponentes: [
+          "Guardiões Sentinelas <span class='dificuldade dificuldade-media'>MÉDIO</span>",
+          "Oblobbles <span class='dificuldade dificuldade-dificil'>DIFÍCIL</span>",
+          "Soldados Imperfeitos <span class='dificuldade dificuldade-facil'>FÁCIL</span>",
+          "Chefe: Alma de Lutador <span class='dificuldade dificuldade-media'>MÉDIO</span>"
+        ],
+        objetivos: [
+          "Adquirir o Amuleto Coração de Cristal",
+          "Encontrar a Máscara Fragmentada",
+          "Derrotar os Três Mantis Sentinelas",
+          "Acessar a Torre do Vigia"
+        ]
+      },
+      "caminho-verde": {
+        nome: "CAMINHO VERDE",
+        oponentes: [
+          "Mosskins <span class='dificuldade dificuldade-facil'>FÁCIL</span>",
+          "Mosscrawlers <span class='dificuldade dificuldade-facil'>FÁCIL</span>",
+          "Spiny Husk <span class='dificuldade dificuldade-media'>MÉDIO</span>",
+          "Chefe: Irmãs de Batalha <span class='dificuldade dificuldade-dificil'>DIFÍCIL</span>"
+        ],
+        objetivos: [
+          "Encontrar a Loja de Sly",
+          "Adquirir o Ferrão Marcador",
+          "Resgatar Bretta",
+          "Encontrar a passagem para os Picos Cristalinos"
+        ]
+      },
+      "ninho-profundo": {
+        nome: "NINHO PROFUNDO",
+        oponentes: [
+          "Deeplings <span class='dificuldade dificuldade-media'>MÉDIO</span>",
+          "Garpedes <span class='dificuldade dificuldade-dificil'>DIFÍCIL</span>",
+          "Stalking Devout <span class='dificuldade dificuldade-media'>MÉDIO</span>",
+          "Chefe: Nosk <span class='dificuldade dificuldade-dificil'>DIFÍCIL</span>"
+        ],
+        objetivos: [
+          "Coletar o Ovo Rançoso",
+          "Encontrar o Amuleto Hiveblood",
+          "Acessar a Colmeia",
+          "Descobrir os segredos ocultos"
+        ]
+      },
+      "penhasco-uivo": {
+        nome: "PENHASCO DO UIVO",
+        oponentes: [
+          "Primal Aspids <span class='dificuldade dificuldade-media'>MÉDIO</span>",
+          "Vengeflies <span class='dificuldade dificuldade-facil'>FÁCIL</span>",
+          "Chefe: Gorb <span class='dificuldade dificuldade-media'>MÉDIO</span>",
+          "Chefe: Mawlek <span class='dificuldade dificuldade-dificil'>DIFÍCIL</span>"
+        ],
+        objetivos: [
+          "Aprender o Grito de Almas",
+          "Encontrar a passagem para o Caminho Verde",
+          "Resgatar Grub",
+          "Encontrar o Amuleto Cárie Brilhante"
+        ]
+      },
+      "celeiro-fungico": {
+        nome: "CELEIRO FÚNGICO",
+        oponentes: [
+          "Fungoons <span class='dificuldade dificuldade-facil'>FÁCIL</span>",
+          "Sporg <span class='dificuldade dificuldade-media'>MÉDIO</span>",
+          "Fungling <span class='dificuldade dificuldade-facil'>FÁCIL</span>",
+          "Chefe: Uumuu <span class='dificuldade dificuldade-dificil'>DIFÍCIL</span>"
+        ],
+        objetivos: [
+          "Adquirir o Mantis Claw",
+          "Encontrar o Amuleto Spore Shroom",
+          "Acessar a Vila dos Mantis",
+          "Desbloquear a passagem para a Cidade das Lágrimas"
+        ]
+      },
+      "bosque-silencioso": {
+        nome: "BOSQUE SILENCIOSO",
+        oponentes: [
+          "Shrumal Warriors <span class='dificuldade dificuldade-media'>MÉDIO</span>",
+          "Shrumal Ogres <span class='dificuldade dificuldade-dificil'>DIFÍCIL</span>",
+          "Chefe: Traitor Lord <span class='dificuldade dificuldade-dificil'>DIFÍCIL</span>",
+          "Chefe: Galien <span class='dificuldade dificuldade-media'>MÉDIO</span>"
+        ],
+        objetivos: [
+          "Libertar os espíritos presos",
+          "Encontrar a Lágrima do Sonhador",
+          "Adquirir o Ferrão Cortante",
+          "Acessar a Área Oculta do Bosque"
+        ]
+      },
+      "picos-cristalinos": {
+        nome: "PICOS CRISTALINOS",
+        oponentes: [
+          "Crystal Hunters <span class='dificuldade dificuldade-media'>MÉDIO</span>",
+          "Crystal Crawlers <span class='dificuldade dificuldade-facil'>FÁCIL</span>",
+          "Chefe: Enraged Guardian <span class='dificuldade dificuldade-dificil'>DIFÍCIL</span>",
+          "Chefe: Markoth <span class='dificuldade dificuldade-media'>MÉDIO</span>"
+        ],
+        objetivos: [
+          "Adquirir a Super Dash",
+          "Encontrar o Amuleto Crystal Heart",
+          "Acessar o Palácio Branco",
+          "Resgatar todos os Grubs da área"
+        ]
+      },
+      "canion-nevoa": {
+        nome: "CÂNION DA NÉVOA",
+        oponentes: [
+          "Dirtcarvers <span class='dificuldade dificuldade-facil'>FÁCIL</span>",
+          "Carver Hatchers <span class='dificuldade dificuldade-media'>MÉDIO</span>",
+          "Chefe: Brooding Mawlek <span class='dificuldade dificuldade-dificil'>DIFÍCIL</span>",
+          "Chefe: Xero <span class='dificuldade dificuldade-media'>MÉDIO</span>"
+        ],
+        objetivos: [
+          "Encontrar a Passagem Secreta",
+          "Adquirir o Ferrão Ciclone",
+          "Resgatar todos os Grubs",
+          "Acessar o Ninho Profundo"
+        ]
+      },
+      "terminal-real": {
+        nome: "TERMINAL REAL",
+        oponentes: [
+          "Royal Retainers <span class='dificuldade dificuldade-media'>MÉDIO</span>",
+          "Kingsmoulds <span class='dificuldade dificuldade-dificil'>DIFÍCIL</span>",
+          "Chefe: The Hollow Knight <span class='dificuldade dificuldade-dificil'>DIFÍCIL</span>",
+          "Chefe: Pure Vessel <span class='dificuldade dificuldade-dificil'>DIFÍCIL</span>"
+        ],
+        objetivos: [
+          "Confrontar o Hollow Knight",
+          "Adquirir a King's Brand",
+          "Acessar o Abismo",
+          "Completar o Selo de união"
+        ]
+      },
+      "jardins-rainha": {
+        nome: "JARDINS DA RAINHA",
+        oponentes: [
+          "Thorned Ticks <span class='dificuldade dificuldade-media'>MÉDIO</span>",
+          "Bluggels <span class='dificuldade dificuldade-facil'>FÁCIL</span>",
+          "Chefe: The White Lady <span class='dificuldade dificuldade-media'>MÉDIO</span>",
+          "Chefe: Traitor Lord <span class='dificuldade dificuldade-dificil'>DIFÍCIL</span>"
+        ],
+        objetivos: [
+          "Encontrar a Rainha Branca",
+          "Adquirir o Amuleto da Flor",
+          "Completar o desafio do Caminho da Dor",
+          "Resgatar todos os Grubs"
+        ]
+      },
+      "terra-esquecida": {
+        nome: "TERRA ESQUECIDA",
+        oponentes: [
+          "Shades <span class='dificuldade dificuldade-media'>MÉDIO</span>",
+          "Shadow Creepers <span class='dificuldade dificuldade-facil'>FÁCIL</span>",
+          "Chefe: The Radiance <span class='dificuldade dificuldade-dificil'>DIFÍCIL</span>",
+          "Chefe: Lost Kin <span class='dificuldade dificuldade-dificil'>DIFÍCIL</span>"
+        ],
+        objetivos: [
+          "Adquirir o Shade Cloak",
+          "Encontrar a Fonte do Abismo",
+          "Desbloquear o verdadeiro final",
+          "Confrontar a Radiance"
+        ]
+      },
+      "caminho-esquecido": {
+        nome: "CAMINHO ESQUECIDO",
+        oponentes: [
+          "Hoppers <span class='dificuldade dificuldade-facil'>FÁCIL</span>",
+          "Tiktiks <span class='dificuldade dificuldade-facil'>FÁCIL</span>",
+          "Chefe: Brooding Mawlek <span class='dificuldade dificuldade-media'>MÉDIO</span>",
+          "Chefe: Gruz Mother <span class='dificuldade dificuldade-facil'>FÁCIL</span>"
+        ],
+        objetivos: [
+          "Adquirir o Mapa da área",
+          "Encontrar Cornifer",
+          "Resgatar o primeiro Grub",
+          "Acessar a próxima área"
+        ]
+      }
+    };
+
+    document.addEventListener('DOMContentLoaded', function() {
+      const overlay = document.getElementById('overlay');
+      const detalhesRegiao = document.getElementById('detalhesRegiao');
+      const detalhesTitulo = document.getElementById('detalhesTitulo');
+      const detalhesOponentes = document.getElementById('detalhesOponentes');
+      const detalhesObjetivos = document.getElementById('detalhesObjetivos');
+      const fecharDetalhes = document.getElementById('fecharDetalhes');
+      
+      // Adicionar event listeners para todas as áreas clicáveis
+      document.querySelectorAll('.mapa-sala, .mapa-rotulo').forEach(elemento => {
+        elemento.addEventListener('click', function() {
+          const regiaoId = this.getAttribute('data-regiao');
+          mostrarDetalhesRegiao(regiaoId);
+        });
+      });
+      
+      // Função para mostrar detalhes da região com efeito de digitação
+      function mostrarDetalhesRegiao(regiaoId) {
+        const regiao = regioes[regiaoId];
+        
+        if (regiao) {
+          // Limpar conteúdo anterior
+          detalhesTitulo.textContent = '';
+          detalhesOponentes.innerHTML = '';
+          detalhesObjetivos.innerHTML = '';
+          
+          // Mostrar o overlay e os detalhes
+          overlay.classList.add('ativo');
+          detalhesRegiao.classList.add('ativo');
+          document.body.style.overflow = 'hidden';
+          
+          // Aplicar efeito de digitação ao título
+          typeEffect(detalhesTitulo, regiao.nome, 50, function() {
+            // Após terminar o título, aplicar efeito aos oponentes
+            typeListEffect(detalhesOponentes, regiao.oponentes, 30, function() {
+              // Após terminar os oponentes, aplicar efeito aos objetivos
+              typeListEffect(detalhesObjetivos, regiao.objetivos, 30);
+            });
+          });
+        }
+      }
+      
+      // Função para efeito de digitação em texto simples
+      function typeEffect(element, text, speed, callback) {
+        let i = 0;
+        element.innerHTML = '';
+        element.classList.add('digitando');
+        
+        function type() {
+          if (i < text.length) {
+            element.innerHTML += text.charAt(i);
+            i++;
+            setTimeout(type, speed);
+          } else {
+            element.classList.remove('digitando');
+            if (callback) callback();
+          }
+        }
+        
+        type();
+      }
+      
+      // Função para efeito de digitação em listas
+      function typeListEffect(element, items, speed, callback) {
+        let i = 0;
+        element.innerHTML = '';
+        
+        function typeNextItem() {
+          if (i < items.length) {
+            const li = document.createElement('li');
+            element.appendChild(li);
+            li.classList.add('digitando');
+            
+            let j = 0;
+            const text = items[i];
+            
+            function typeChar() {
+              if (j < text.length) {
+                li.innerHTML = text.substring(0, j + 1) + '<span class="cursor">|</span>';
+                j++;
+                setTimeout(typeChar, speed);
+              } else {
+                li.classList.remove('digitando');
+                li.innerHTML = text;
+                i++;
+                setTimeout(typeNextItem, 100);
+              }
+            }
+            
+            typeChar();
+          } else if (callback) {
+            callback();
+          }
+        }
+        
+        typeNextItem();
+      }
+      
+      // Fechar detalhes
+      function fecharDetalhesRegiao() {
+        overlay.classList.remove('ativo');
+        detalhesRegiao.classList.remove('ativo');
+        document.body.style.overflow = '';
+      }
+      
+      fecharDetalhes.addEventListener('click', fecharDetalhesRegiao);
+      overlay.addEventListener('click', fecharDetalhesRegiao);
+      
+      // Fechar com a tecla ESC
+      document.addEventListener('keydown', function(e) {
+        if (e.key === 'Escape') {
+          fecharDetalhesRegiao();
+        }
+      });
+    });
+  </script>
+</body>
+</html>

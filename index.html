@@ -1,0 +1,349 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+   <link rel="shortcut icon" href="https://64.media.tumblr.com/08bd6a35df253c705d808e1993d25bdf/tumblr_oont88pC4a1w9xelho1_400.gif">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Hollow Knight - Estilo Pixel</title>
+
+  <!-- Fonte pixel (Press Start 2P) -->
+  <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
+
+  <style>
+    *{margin:0;padding:0;box-sizing:border-box}
+    html,body{height:100%;font-family: 'Press Start 2P', Arial, sans-serif;background:#08080b;color:#e9f6ff}
+
+    .wrapper{min-height:100vh;display:flex;flex-direction:column}
+
+    /* cabeçalho estilo 'pixel' */
+    .cabecalho{
+      background:#071126;
+      color:#cfefff;
+      padding:22px;
+      text-align:center;
+      border-bottom:6px solid #2fc7ff;
+      box-shadow:0 8px 0 rgba(0,0,0,0.6) inset;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .cabecalho::before {
+      content: "";
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='20' height='20' viewBox='0 0 20 20'%3E%3Crect width='2' height='2' fill='%232fc7ff' fill-opacity='0.1'/%3E%3C/svg%3E");
+      z-index: 0;
+    }
+
+    .cabecalho h1{
+      font-size:16px; 
+      letter-spacing:2px;
+      position: relative;
+      z-index: 1;
+      text-shadow: 2px 2px 0 #001b2b;
+    }
+
+    /* menu */
+    .menu{
+      background:#0b1b2a;
+      padding:12px;
+      text-align:center;
+      border-bottom:4px solid #053147;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+    .menu a{
+      color:#cfefff;
+      margin:0 14px;
+      text-decoration:none;
+      display:inline-block;
+      padding:6px 10px;
+      border:3px solid transparent;
+      transition: all .12s;
+      font-size:11px;
+    }
+    .menu a:hover{
+      color:#001b2b;
+      background:#4fc3f7;
+      border-color:#012034;
+      transform:translateY(-2px);
+    }
+
+    /* corpo */
+    .corpo{
+      flex:1;
+      padding:28px;
+      background: linear-gradient(180deg, rgba(2,6,15,0.6), rgba(0,0,0,0.6)), 
+                  url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='40' height='40' viewBox='0 0 40 40'%3E%3Crect width='40' height='40' fill='%23081125'/%3E%3Cpath d='M0 0L40 40M40 0L0 40' stroke='%23050812' stroke-width='1'/%3E%3C/svg%3E");
+      color:#e6f8ff;
+      font-size:12px;
+      line-height:1.6;
+      text-align:center;
+    }
+
+    /* contêiner da imagem pixelada */
+    .pixel-banner{
+      margin:28px auto;
+      width:100%;
+      max-width:1000px;
+      overflow:hidden;
+      border:8px solid #08182a;
+      box-shadow: 0 0 0 4px rgba(47,199,255,0.08) inset;
+      position: relative;
+      height: 300px; /* Altura fixa para o banner */
+    }
+
+    .pixel-banner::after {
+      content: "";
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='6' height='6' viewBox='0 0 6 6'%3E%3Crect width='3' height='3' fill='%23000000' fill-opacity='0.2'/%3E%3C/svg%3E");
+      pointer-events: none;
+    }
+
+    .pixel-banner img{
+      display:block;
+      width:100%;
+      height:100%;
+      object-fit: cover;
+      transition: transform 0.3s ease;
+    }
+
+    .pixel-banner:hover img {
+      transform: scale(1.02);
+    }
+
+    /* layout personagem + falas */
+    .personagem{
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      margin:40px auto;
+      max-width:1000px;
+      gap:30px;
+      text-align:left;
+      flex-wrap: wrap;
+    }
+
+    .personagem img{
+      width:260px;
+      height:auto;
+      image-rendering: pixelated;
+      border:6px solid #021728;
+      background:#000;
+      transition: all 0.3s ease;
+      filter: drop-shadow(0 0 5px rgba(47, 199, 255, 0.5));
+    }
+
+    .personagem img:hover {
+      transform: translateY(-5px);
+      filter: drop-shadow(0 0 10px rgba(47, 199, 255, 0.8));
+    }
+
+    .falas{
+      flex:1;
+      background:rgba(0,0,0,0.35);
+      padding:18px;
+      border:6px solid #021728;
+      font-size:11px;
+      line-height:1.6;
+      min-width: 300px;
+      position: relative;
+    }
+
+    .falas::before {
+      content: "";
+      position: absolute;
+      top: 5px;
+      left: 5px;
+      right: 5px;
+      bottom: 5px;
+      border: 1px solid rgba(47, 199, 255, 0.2);
+      pointer-events: none;
+    }
+
+    .falas p {
+      margin-bottom: 15px;
+      position: relative;
+      z-index: 1;
+    }
+
+    .falas p:last-child {
+      margin-bottom: 0;
+    }
+
+    /* rodapé */
+    .rodape{
+      background:#071126;
+      color:#7fa7b8;
+      text-align:center;
+      padding:14px;
+      border-top:6px solid #2fc7ff;
+      font-size:10px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .rodape::before {
+      content: "";
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='20' height='20' viewBox='0 0 20 20'%3E%3Crect width='2' height='2' fill='%232fc7ff' fill-opacity='0.05'/%3E%3C/svg%3E");
+      z-index: 0;
+    }
+
+    .rodape p {
+      position: relative;
+      z-index: 1;
+    }
+
+    .box-pixel{
+      display:inline-block;
+      padding:18px;
+      border:6px solid #021728;
+      background: rgba(0,0,0,0.25);
+      margin-top:8px;
+      max-width: 800px;
+      position: relative;
+    }
+
+    .box-pixel::after {
+      content: "";
+      position: absolute;
+      top: 3px;
+      left: 3px;
+      right: 3px;
+      bottom: 3px;
+      border: 1px solid rgba(47, 199, 255, 0.1);
+      pointer-events: none;
+    }
+
+    /* Efeito de glitch no texto do cabeçalho */
+    @keyframes glitch {
+      0% { transform: translate(0); }
+      20% { transform: translate(-2px, 2px); }
+      40% { transform: translate(-2px, -2px); }
+      60% { transform: translate(2px, 2px); }
+      80% { transform: translate(2px, -2px); }
+      100% { transform: translate(0); }
+    }
+
+    .cabecalho h1:hover {
+      animation: glitch 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94) both;
+    }
+
+    /* Responsividade */
+    @media (max-width: 768px) {
+      .cabecalho h1 { font-size: 14px; }
+      .menu a { margin: 0 8px; font-size: 10px; }
+      .personagem { flex-direction: column; }
+      .personagem img { width: 200px; }
+      .falas { font-size: 10px; }
+      .pixel-banner { height: 200px; }
+    }
+
+    @media (max-width: 480px) {
+      .cabecalho h1 { font-size: 12px; }
+      .menu a { display: block; margin: 8px 0; }
+      .corpo { padding: 15px; }
+      .box-pixel { padding: 12px; }
+      .pixel-banner { height: 150px; }
+    }
+  </style>
+</head>
+<body>
+  <div class="wrapper">
+    <div class="cabecalho">
+      <h1>HOLLOW KNIGHT</h1>
+    </div>
+
+    <div class="menu">
+      <a href="index.html">INÍCIO</a>
+      <a href="personagens.html">PERSONAGENS</a>
+      <a href="mapa.html">MAPA</a>
+      <a href="galeria.html">GALERIA</a>
+      <a href="contato.html">EXPLICAÇÃO</a>
+      <a href="https://store.steampowered.com/app/367520/Hollow_Knight/" target="_blank">COMPRAR JOGO</a>
+    </div>
+
+    <div class="corpo">
+      <div class="box-pixel">
+        <p>Aqueles tolos o suficiente para atravessar esse vazio devem pagar o preço e renunciar à mente preciosa que esse reino concede.</p>
+      </div>
+
+      <!-- Banner pixelado com a imagem fornecida -->
+      <div class="pixel-banner">
+        <img src="https://i.pinimg.com/originals/fa/dd/c8/faddc82ac3c26c43f0ce9bd065d2b807.gif" alt="Hollow Knight - Pixel banner animado">
+      </div>
+
+      <!-- Seção personagem + falas -->
+      <div class="personagem">
+        <!-- Imagem substituta em base64 para evitar problemas de caminho -->
+        <img src="https://cdna.artstation.com/p/assets/images/images/039/149/542/original/klabautermann-hollow.gif?1625073508'http://www.w3.org/2000/svg' width='260' height='360' viewBox='0 0 260 360'%3E%3Crect width='260' height='360' fill='%23000'/%3E%3Cpath d='M130,50 L100,100 L70,150 L100,200 L130,250 L160,200 L190,150 L160,100 Z' fill='%23333' stroke='%232FC7FF' stroke-width='3'/%3E%3Ccircle cx='130' cy='80' r='15' fill='%23000' stroke='%232FC7FF' stroke-width='2'/%3E%3Crect x='115' y='250' width='30' height='100' fill='%23333' stroke='%232FC7FF' stroke-width='2'/%3E%3Cpath d='M115,350 L90,400 M145,350 L170,400' stroke='%232FC7FF' stroke-width='3'/%3E%3C/svg%3E" alt="Hollow Knight personagem">
+        <div class="falas">
+          <p>“Aventureiro silencioso... este reino em ruínas guarda segredos que apenas os corajosos descobrem.”</p>
+          <p>“Cuidado com as sombras, pois até mesmo a luz pode se perder em Hallownest.”</p>
+          <p>“Em cada canto escuro, uma história espera para ser descoberta. Em cada inimigo derrotado, uma lição é aprendida.”</p>
+        </div>
+      </div>
+
+      <!-- Nova seção de conteúdo -->
+      <div class="box-pixel" style="margin-top: 40px;">
+        <p>EXPLORE OS CINCO PRINCIPAIS REINOS DE HALLOWNEST:</p>
+        <div style="display: flex; justify-content: center; flex-wrap: wrap; gap: 15px; margin-top: 20px;">
+          <div style="border: 3px solid #053147; padding: 10px; width: 140px;">
+            <p style="font-size: 9px; margin-bottom: 8px;">PENSO VERDEJANTE</p>
+            <div style="width: 100%; height: 80px; background: linear-gradient(to bottom, #1a3c1a, #0d2b0d); border: 2px solid #2fc7ff;"></div>
+          </div>
+          <div style="border: 3px solid #053147; padding: 10px; width: 140px;">
+            <p style="font-size: 9px; margin-bottom: 8px;">CIDADADE DE LÁGRIMAS</p>
+            <div style="width: 100%; height: 80px; background: linear-gradient(to bottom, #2c3f5c, #1a2a42); border: 2px solid #2fc7ff;"></div>
+          </div>
+          <div style="border: 3px solid #053147; padding: 10px; width: 140px;">
+            <p style="font-size: 9px; margin-bottom: 8px;">CAMINHO ESQUECIDO</p>
+            <div style="width: 100%; height: 80px; background: linear-gradient(to bottom, #3d3d3d, #252525); border: 2px solid #2fc7ff;"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="rodape">
+      <p>Todos os direitos reservados © 2025 | Hollow Knight é uma propriedade da Emilly</p>
+    </div>
+  </div>
+
+  <script>
+    // Efeito de digitação para as falas do personagem
+    document.addEventListener('DOMContentLoaded', function() {
+      const falas = document.querySelectorAll('.falas p');
+      falas.forEach(fala => {
+        const textoOriginal = fala.textContent;
+        fala.textContent = '';
+        let i = 0;
+        const velocidade = 50; // velocidade da digitação em ms
+        
+        function digitar() {
+          if (i < textoOriginal.length) {
+            fala.textContent += textoOriginal.charAt(i);
+            i++;
+            setTimeout(digitar, velocidade);
+          }
+        }
+        
+        // Iniciar efeito quando o elemento estiver visível
+        setTimeout(digitar, 1000);
+      });
+    });
+  </script>
+</body>
+</html>

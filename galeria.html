@@ -1,0 +1,605 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <link rel="shortcut icon" href="https://64.media.tumblr.com/08bd6a35df253c705d808e1993d25bdf/tumblr_oont88pC4a1w9xelho1_400.gif">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Galeria de Hollow Knight</title>
+  <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
+  <style>
+    *{margin:0;padding:0;box-sizing:border-box}
+    html,body{height:100%;font-family: 'Press Start 2P', Arial, sans-serif;background:#08080b;color:#e9f6ff}
+
+    .wrapper{min-height:100vh;display:flex;flex-direction:column}
+
+    /* cabeçalho estilo 'pixel' */
+    .cabecalho{
+      background:#071126;
+      color:#cfefff;
+      padding:22px;
+      text-align:center;
+      border-bottom:6px solid #2fc7ff;
+      box-shadow:0 8px 0 rgba(0,0,0,0.6) inset;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .cabecalho::before {
+      content: "";
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='20' height='20' viewBox='0 0 20 20'%3E%3Crect width='2' height='2' fill='%232fc7ff' fill-opacity='0.1'/%3E%3C/svg%3E");
+      z-index: 0;
+    }
+
+    .cabecalho h1{
+      font-size:16px; 
+      letter-spacing:2px;
+      position: relative;
+      z-index: 1;
+      text-shadow: 2px 2px 0 #001b2b;
+    }
+
+    /* menu */
+    .menu{
+      background:#0b1b2a;
+      padding:12px;
+      text-align:center;
+      border-bottom:4px solid #053147;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+    .menu a{
+      color:#cfefff;
+      margin:0 14px;
+      text-decoration:none;
+      display:inline-block;
+      padding:6px 10px;
+      border:3px solid transparent;
+      transition: all .12s;
+      font-size:11px;
+    }
+    .menu a:hover{
+      color:#001b2b;
+      background:#4fc3f7;
+      border-color:#012034;
+      transform:translateY(-2px);
+    }
+
+    /* corpo */
+    .corpo{
+      flex:1;
+      padding:28px;
+      background: linear-gradient(180deg, rgba(2,6,15,0.6), rgba(0,0,0,0.6)), 
+                  url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='40' height='40' viewBox='0 0 40 40'%3E%3Crect width='40' height='40' fill='%23081125'/%3E%3Cpath d='M0 0L40 40M40 0L0 40' stroke='%23050812' stroke-width='1'/%3E%3C/svg%3E");
+      color:#e6f8ff;
+      font-size:12px;
+      line-height:1.6;
+      text-align:center;
+    }
+
+    /* Galeria */
+    .galeria-container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 20px;
+    }
+
+    .galeria-titulo {
+      color: #2fc7ff;
+      font-size: 18px;
+      margin-bottom: 30px;
+      text-shadow: 2px 2px 0 #001b2b;
+    }
+
+    .galeria-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+      gap: 25px;
+    }
+
+    .galeria-item {
+      background: rgba(13, 25, 42, 0.8);
+      border: 4px solid #021728;
+      padding: 15px;
+      transition: all 0.3s ease;
+      cursor: pointer;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .galeria-item:hover {
+      transform: translateY(-5px);
+      border-color: #2fc7ff;
+      box-shadow: 0 5px 15px rgba(47, 199, 255, 0.3);
+    }
+
+    .galeria-item.tremendo {
+      animation: tremer 0.3s ease;
+    }
+
+    @keyframes tremer {
+      0% { transform: translateX(0); }
+      25% { transform: translateX(-5px); }
+      50% { transform: translateX(5px); }
+      75% { transform: translateX(-5px); }
+      100% { transform: translateX(0); }
+    }
+
+    .galeria-imagem {
+      width: 100%;
+      height: 180px;
+      object-fit: cover;
+      image-rendering: pixelated;
+      border: 3px solid #000;
+      margin-bottom: 15px;
+      transition: all 0.3s ease;
+    }
+
+    .galeria-item:hover .galeria-imagem {
+      filter: brightness(1.2);
+    }
+
+    .galeria-nome {
+      font-size: 12px;
+      color: #2fc7ff;
+      margin-bottom: 10px;
+      text-shadow: 1px 1px 0 #000;
+    }
+
+    .galeria-descricao {
+      font-size: 9px;
+      line-height: 1.5;
+      color: #cfefff;
+      margin-bottom: 15px;
+      height: 80px;
+      overflow: hidden;
+    }
+
+    /* Modal */
+    .modal {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 5, 15, 0.95);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      z-index: 1000;
+      opacity: 0;
+      visibility: hidden;
+      transition: opacity 0.5s ease;
+    }
+
+    .modal.ativo {
+      opacity: 1;
+      visibility: visible;
+    }
+
+    .modal-conteudo {
+      width: 90%;
+      max-width: 800px;
+      background: rgba(13, 25, 42, 0.95);
+      border: 6px solid #2fc7ff;
+      padding: 25px;
+      position: relative;
+      transform: scale(0.9);
+      transition: transform 0.5s ease;
+    }
+
+    .modal.ativo .modal-conteudo {
+      transform: scale(1);
+    }
+
+    .fechar-modal {
+      position: absolute;
+      top: 15px;
+      right: 15px;
+      background: #2fc7ff;
+      color: #001b2b;
+      border: 2px solid #021728;
+      padding: 8px 12px;
+      font-family: 'Press Start 2P', cursive;
+      font-size: 10px;
+      cursor: pointer;
+      transition: all 0.3s;
+    }
+
+    .fechar-modal:hover {
+      background: #4fd7ff;
+    }
+
+    .modal-imagem {
+      width: 100%;
+      max-height: 350px;
+      object-fit: contain;
+      margin-bottom: 20px;
+      border: 4px solid #000;
+    }
+
+    .modal-titulo {
+      color: #2fc7ff;
+      font-size: 16px;
+      margin-bottom: 15px;
+      text-shadow: 2px 2px 0 #000;
+    }
+
+    .modal-texto {
+      font-size: 10px;
+      line-height: 1.6;
+      margin-bottom: 15px;
+    }
+
+    .modal-lista {
+      font-size: 10px;
+      line-height: 1.6;
+      margin-left: 20px;
+      margin-bottom: 20px;
+    }
+
+    .modal-lista li {
+      margin-bottom: 8px;
+    }
+
+    .dificuldade {
+      display: inline-block;
+      padding: 3px 8px;
+      border-radius: 3px;
+      font-size: 9px;
+      margin-left: 5px;
+    }
+
+    .dificuldade-facil {
+      background: #2d6a2d;
+      color: #b8f7b8;
+    }
+
+    .dificuldade-media {
+      background: #8d6d1d;
+      color: #ffeb99;
+    }
+
+    .dificuldade-dificil {
+      background: #8d2d2d;
+      color: #ffaaaa;
+    }
+
+    /* rodapé */
+    .rodape{
+      background:#071126;
+      color:#7fa7b8;
+      text-align:center;
+      padding:14px;
+      border-top:6px solid #2fc7ff;
+      font-size:10px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .rodape::before {
+      content: "";
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='20' height='20' viewBox='0 0 20 20'%3E%3Crect width='2' height='2' fill='%232fc7ff' fill-opacity='0.05'/%3E%3C/svg%3E");
+      z-index: 0;
+    }
+
+    .rodape p {
+      position: relative;
+      z-index: 1;
+    }
+
+    /* Responsividade */
+    @media (max-width: 768px) {
+      .cabecalho h1 { font-size: 14px; }
+      .menu a { margin: 0 8px; font-size: 10px; }
+      .galeria-grid { grid-template-columns: repeat(2, 1fr); }
+    }
+
+    @media (max-width: 480px) {
+      .cabecalho h1 { font-size: 12px; }
+      .menu a { display: block; margin: 8px 0; }
+      .corpo { padding: 15px; }
+      .galeria-grid { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+  <div class="wrapper">
+    <div class="cabecalho">
+      <h1>GALERIA DE HOLLOW KNIGHT</h1>
+    </div>
+
+    <div class="menu">
+      <a href="index.html">INÍCIO</a>
+      <a href="personagens.html">PERSONAGENS</a>
+      <a href="mapa.html">MAPA</a>
+      <a href="galeria.html">GALERIA</a>
+      <a href="contato.html">EXPLICAÇÃO</a>
+      <a href="https://store.steampowered.com/app/367520/Hollow_Knight/" target="_blank">COMPRAR JOGO</a>
+    </div>
+
+    <div class="corpo">
+      <div class="galeria-container">
+        <h2 class="galeria-titulo">EXPLORE AS ÁREAS E SEGREDOS DE HALLOWNEST</h2>
+        
+        <div class="galeria-grid">
+          <!-- Item 1 -->
+          <div class="galeria-item" data-regiao="cidade-lagrimas">
+            <img src="https://i.ytimg.com/vi/0V02ziEvPyU/hq720.jpg?sqp=-oaymwEhCK4FEIIDSFryq4qpAxMIARUAAAAAGAElAADIQj0AgKJD&rs=AOn4CLBKs13ME9dR4oWubjo1CeY8yO-kIA" alt="Cidade das Lágrimas" class="galeria-imagem">
+            <h3 class="galeria-nome">CIDADE DAS LÁGRIMAS</h3>
+            <p class="galeria-descricao">Uma cidade majestosa e melancólica, constantemente encharcada pela chuva eterna. Centro do reino de Hallownest.</p>
+          </div>
+          
+          <!-- Item 2 -->
+          <div class="galeria-item" data-regiao="caminho-verde">
+            <img src="caminhoverde.png" alt="Caminho Verde" class="galeria-imagem">
+            <h3 class="galeria-nome">CAMINHO VERDE</h3>
+            <p class="galeria-descricao">Uma área exuberante e verdejante, com vegetação densa e criaturas amigáveis. Lar de vários insetos pacíficos.</p>
+          </div>
+          
+          <!-- Item 3 -->
+          <div class="galeria-item" data-regiao="penhasco-uivo">
+            <img src="https://revolutionarena.com/pt-br/wp-content/uploads/sites/2/2021/09/hollow-knight.jpg" alt="Penhasco do Uivo" class="galeria-imagem">
+            <h3 class="galeria-nome">PENHASCO DO UIVO</h3>
+            <p class="galeria-descricao">Um penhasco ventoso com correntes de ar poderosas. Requer habilidade para navegar e descobrir seus segredos.</p>
+          </div>
+          
+          <!-- Item 4 -->
+          <div class="galeria-item" data-regiao="picos-cristalinos">
+            <img src="https://i.ytimg.com/vi/JJOnsrpvRVA/hq720.jpg?sqp=-oaymwEhCK4FEIIDSFryq4qpAxMIARUAAAAAGAElAADIQj0AgKJD&rs=AOn4CLDYNvbTprm2WUn_W8zWGKgtYyt5SQ" alt="Picos Cristalinos" class="galeria-imagem">
+            <h3 class="galeria-nome">PICOS CRISTALINOS</h3>
+            <p class="galeria-descricao">Uma área brilhante e perigosa repleta de cristais energizados. Oferece novas habilidades de mobilidade.</p>
+          </div>
+          
+          <!-- Item 5 -->
+          <div class="galeria-item" data-regiao="celeiro-fungico">
+            <img src="https://i.ytimg.com/vi/ddKEBgiN3n0/hq720.jpg?sqp=-oaymwEhCK4FEIIDSFryq4qpAxMIARUAAAAAGAElAADIQj0AgKJD&rs=AOn4CLB4paGRXIzqFa5VOSqNDsBJyCldwQ" alt="Celeiro Fúngico" class="galeria-imagem">
+            <h3 class="galeria-nome">CELEIRO FÚNGICO</h3>
+            <p class="galeria-descricao">Uma área úmida e pantanosa com fungos gigantes. Lar dos destemidos guerreiros Mantis.</p>
+          </div>
+          
+          <!-- Item 6 -->
+          <div class="galeria-item" data-regiao="bosque-silencioso">
+            <img src="https://images.gog-statics.com/bc4ca88f79ded16afa3a7fe9a1446c3a1780785bfb57b1e3b744624ff635902b_product_card_v2_mobile_slider_639.jpg" alt="Bosque Silencioso" class="galeria-imagem">
+            <h3 class="galeria-nome">BOSQUE SILENCIOSO</h3>
+            <p class="galeria-descricao">Uma floresta assombrada por espíritos e sombras. Exige luz para navegar com segurança.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Modal -->
+    <div class="modal" id="modal">
+      <div class="modal-conteudo">
+        <button class="fechar-modal" id="fecharModal">FECHAR [X]</button>
+        <img src="" alt="" class="modal-imagem" id="modalImagem">
+        <h3 class="modal-titulo" id="modalTitulo"></h3>
+        <p class="modal-texto" id="modalDescricao"></p>
+        
+        <h4 class="modal-titulo">DESAFIOS E OPONENTES</h4>
+        <ul class="modal-lista" id="modalOponentes">
+          <!-- Preenchido por JavaScript -->
+        </ul>
+        
+        <h4 class="modal-titulo">OBJETIVOS PRINCIPAIS</h4>
+        <ul class="modal-lista" id="modalObjetivos">
+          <!-- Preenchido por JavaScript -->
+        </ul>
+      </div>
+    </div>
+
+    <div class="rodape">
+      <p>Todos os direitos reservados © 2025 | Hollow Knight é uma propriedade da Emilly</p>
+    </div>
+  </div>
+
+  <script>
+    // Dados das regiões
+    const regioes = {
+      "cidade-lagrimas": {
+        nome: "CIDADE DAS LÁGRIMAS",
+        imagem: "https://i.redd.it/h07igna45m051.jpg",
+        descricao: "A Cidade das Lágrimas é o coração do reino de Hallownest, uma metrópole majestosa construída sob uma cascata eterna. A chuva constante que cai sobre a cidade cria uma atmosfera melancólica e solene. Esta área abriga alguns dos segredos mais profundos do reino, incluindo o Palácio Branco e a fonte da infecção que assola Hallownest.",
+        oponentes: [
+          "Guardiões Sentinelas <span class='dificuldade dificuldade-media'>MÉDIO</span>",
+          "Oblobbles <span class='dificuldade dificuldade-dificil'>DIFÍCIL</span>",
+          "Soldados Imperfeitos <span class='dificuldade dificuldade-facil'>FÁCIL</span>",
+          "Chefe: Alma de Lutador <span class='dificuldade dificuldade-media'>MÉDIO</span>",
+          "Chefe: Os Cavaleiros Guardiães <span class='dificuldade dificuldade-dificil'>DIFÍCIL</span>"
+        ],
+        objetivos: [
+          "Adquirir o Amuleto Coração de Cristal",
+          "Encontrar a Máscara Fragmentada",
+          "Derrotar os Três Mantis Sentinelas",
+          "Acessar a Torre do Vigia",
+          "Resolver o enigma do Embaixador da Chuva"
+        ]
+      },
+      "caminho-verde": {
+        nome: "CAMINHO VERDE",
+        imagem: "https://questgiver.blog/wp-content/uploads/2019/07/lake_of_unn.jpg",
+        descricao: "O Caminho Verde é uma área exuberante e cheia de vida, com vegetação densa e criaturas pacíficas. Esta região serve como uma introdução às mecânicas básicas do jogo, com inimigos mais fáceis e quebra-cabeças simples. É o lar de vários insetos amigáveis e esconderijos secretos.",
+        oponentes: [
+          "Mosskins <span class='dificuldade dificuldade-facil'>FÁCIL</span>",
+          "Mosscrawlers <span class='dificuldade dificuldade-facil'>FÁCIL</span>",
+          "Spiny Husk <span class='dificuldade dificuldade-media'>MÉDIO</span>",
+          "Chefe: Irmãs de Batalha <span class='dificuldade dificuldade-dificil'>DIFÍCIL</span>",
+          "Chefe: False Knight <span class='dificuldade dificuldade-media'>MÉDIO</span>"
+        ],
+        objetivos: [
+          "Encontrar a Loja de Sly",
+          "Adquirir o Ferrão Marcador",
+          "Resgatar Bretta",
+          "Encontrar a passagem para os Picos Cristalinos",
+          "Coletar o Diário de Viajante"
+        ]
+      },
+      "penhasco-uivo": {
+        nome: "PENHASCO DO UIVO",
+        imagem: "https://pm1.aminoapps.com/7017/a5ab2ba419a5a76f9786315efa72a1bc81073be2r1-2048-1152v2_00.jpg",
+        descricao: "O Penhasco do Uivo é uma área ventosa com correntes de ar poderosas que podem tanto impedir quanto auxiliar o progresso. Esta região é opcional, mas recompensa os jogadores com uma habilidade crucial - o Grito de Almas. A área é desafiadora e requer precisão nos saltos.",
+        oponentes: [
+          "Primal Aspids <span class='dificuldade dificuldade-media'>MÉDIO</span>",
+          "Vengeflies <span class='dificuldade dificuldade-facil'>FÁCIL</span>",
+          "Chefe: Gorb <span class='dificuldade dificuldade-media'>MÉDIO</span>",
+          "Chefe: Mawlek <span class='dificuldade dificuldade-dificil'>DIFÍCIL</span>",
+          "Chefe: Gruz Mother <span class='dificuldade dificuldade-facil'>FÁCIL</span>"
+        ],
+        objetivos: [
+          "Aprender o Grito de Almas",
+          "Encontrar a passagem para o Caminho Verde",
+          "Resgatar Grub",
+          "Encontrar o Amuleto Cárie Brilhante",
+          "Desbloquear a Arena dos Guerreiros"
+        ]
+      },
+      "picos-cristalinos": {
+        nome: "PICOS CRISTALINOS",
+        imagem: "https://pm1.aminoapps.com/7023/f642c110f9373eabeb53d63e2615c56bc26d81d1r1-2048-1152v2_hq.jpg",
+        descricao: "Os Picos Cristalinos são uma área brilhante e perigosa repleta de cristais energizados que podem ser usados para obter novas habilidades de mobilidade. Esta região é conhecida por sua trilha sonora atmosférica e por abrigar mineros que perderam a sanidade devido à exposição prolongada aos cristais.",
+        oponentes: [
+          "Crystal Hunters <span class='dificuldade dificuldade-media'>MÉDIO</span>",
+          "Crystal Crawlers <span class='dificuldade dificuldade-facil'>FÁCIL</span>",
+          "Chefe: Enraged Guardian <span class='dificuldade dificuldade-dificil'>DIFÍCIL</span>",
+          "Chefe: Markoth <span class='dificuldade dificuldade-media'>MÉDIO</span>",
+          "Chefe: The Collector <span class='dificuldade dificuldade-media'>MÉDIO</span>"
+        ],
+        objetivos: [
+          "Adquirir a Super Dash",
+          "Encontrar o Amuleto Crystal Heart",
+          "Acessar o Palácio Branco",
+          "Resgatar todos os Grubs da área",
+          "Desbloquear o acesso à Mina de Cristal"
+        ]
+      },
+      "celeiro-fungico": {
+        nome: "CELEIRO FÚNGICO",
+        imagem: "https://criticalhits.com.br/wp-content/uploads/2025/06/hollow-knight-detonado-13.jpg",
+        descricao: "O Celeiro Fúngico é uma área úmida e pantanosa com fungos gigantes e uma estética orgânica distinta. Esta região é o lar dos destemidos guerreiros Mantis, que possuem uma cultura guerreira honrosa. A área conecta várias regiões importantes e contém segredos essenciais para o progresso.",
+        oponentes: [
+          "Fungoons <span class='dificuldade dificuldade-facil'>FÁCIL</span>",
+          "Sporg <span class='dificuldade dificuldade-media'>MÉDIO</span>",
+          "Fungling <span class='dificuldade dificuldade-facil'>FÁCIL</span>",
+          "Chefe: Uumuu <span class='dificuldade dificuldade-dificil'>DIFÍCIL</span>",
+          "Chefe: Mantis Lords <span class='dificuldade dificuldade-dificil'>DIFÍCIL</span>"
+        ],
+        objetivos: [
+          "Adquirir o Mantis Claw",
+          "Encontrar o Amuleto Spore Shroom",
+          "Acessar a Vila dos Mantis",
+          "Desbloquear a passagem para a Cidade das Lágrimas",
+          "Ganhar o respeito dos Lordes Mantis"
+        ]
+      },
+      "bosque-silencioso": {
+        nome: "BOSQUE SILENCIOSO",
+        imagem: "https://shared.fastly.steamstatic.com/store_item_assets/steam/apps/1030300/26950369fe4b03c2268620eb9815c8a246aa0b06/ss_26950369fe4b03c2268620eb9815c8a246aa0b06.1920x1080.jpg",
+        descricao: "O Bosque Silencioso é uma floresta assombrada por espíritos e sombras, onde a luz é necessária para navegar com segurança. Esta área possui uma atmosfera sombria e misteriosa, com mecânicas únicas de iluminação. É o lar de criaturas corrompidas pela escuridão e guarda segredos ancestrais.",
+        oponentes: [
+          "Shrumal Warriors <span class='dificuldade dificuldade-media'>MÉDIO</span>",
+          "Shrumal Ogres <span class='dificuldade dificuldade-dificil'>DIFÍCIL</span>",
+          "Chefe: Traitor Lord <span class='dificuldade dificuldade-dificil'>DIFÍCIL</span>",
+          "Chefe: Galien <span class='dificuldade dificuldade-media'>MÉDIO</span>",
+          "Chefe: Soul Master <span class='dificuldade dificuldade-media'>MÉDIO</span>"
+        ],
+        objetivos: [
+          "Libertar os espíritos presos",
+          "Encontrar a Lágrima do Sonhador",
+          "Adquirir o Ferrão Cortante",
+          "Acessar a Área Oculta do Bosque",
+          "Acender todas as lanternas espirituais"
+        ]
+      }
+    };
+
+    document.addEventListener('DOMContentLoaded', function() {
+      const modal = document.getElementById('modal');
+      const modalImagem = document.getElementById('modalImagem');
+      const modalTitulo = document.getElementById('modalTitulo');
+      const modalDescricao = document.getElementById('modalDescricao');
+      const modalOponentes = document.getElementById('modalOponentes');
+      const modalObjetivos = document.getElementById('modalObjetivos');
+      const fecharModal = document.getElementById('fecharModal');
+      
+      // Adicionar event listeners para todos os itens da galeria
+      document.querySelectorAll('.galeria-item').forEach(item => {
+        item.addEventListener('click', function() {
+          // Efeito de tremor
+          this.classList.add('tremendo');
+          setTimeout(() => {
+            this.classList.remove('tremendo');
+          }, 300);
+          
+          // Abrir modal após o tremor
+          setTimeout(() => {
+            const regiaoId = this.getAttribute('data-regiao');
+            abrirModal(regiaoId);
+          }, 300);
+        });
+      });
+      
+      // Função para abrir o modal com os dados da região
+      function abrirModal(regiaoId) {
+        const regiao = regioes[regiaoId];
+        
+        if (regiao) {
+          modalImagem.src = regiao.imagem;
+          modalImagem.alt = regiao.nome;
+          modalTitulo.textContent = regiao.nome;
+          modalDescricao.textContent = regiao.descricao;
+          
+          // Preencher oponentes
+          modalOponentes.innerHTML = '';
+          regiao.oponentes.forEach(oponente => {
+            const li = document.createElement('li');
+            li.innerHTML = oponente;
+            modalOponentes.appendChild(li);
+          });
+          
+          // Preencher objetivos
+          modalObjetivos.innerHTML = '';
+          regiao.objetivos.forEach(objetivo => {
+            const li = document.createElement('li');
+            li.textContent = objetivo;
+            modalObjetivos.appendChild(li);
+          });
+          
+          // Mostrar o modal
+          modal.classList.add('ativo');
+          document.body.style.overflow = 'hidden';
+        }
+      }
+      
+      // Fechar modal
+      function fecharModalFunc() {
+        modal.classList.remove('ativo');
+        document.body.style.overflow = '';
+      }
+      
+      fecharModal.addEventListener('click', fecharModalFunc);
+      modal.addEventListener('click', function(e) {
+        if (e.target === modal) {
+          fecharModalFunc();
+        }
+      });
+      
+      // Fechar com a tecla ESC
+      document.addEventListener('keydown', function(e) {
+        if (e.key === 'Escape') {
+          fecharModalFunc();
+        }
+      });
+    });
+  </script>
+</body>
+</html>

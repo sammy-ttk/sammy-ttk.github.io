@@ -1,0 +1,532 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <link rel="shortcut icon" href="https://64.media.tumblr.com/08bd6a35df253c705d808e1993d25bdf/tumblr_oont88pC4a1w9xelho1_400.gif">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Como Foi Feito o Site - Hollow Knight</title>
+  <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
+  <style>
+    *{margin:0;padding:0;box-sizing:border-box}
+    html,body{height:100%;font-family: 'Press Start 2P', Arial, sans-serif;background:#08080b;color:#e9f6ff}
+
+    .wrapper{min-height:100vh;display:flex;flex-direction:column}
+
+    /* cabeçalho estilo 'pixel' */
+    .cabecalho{
+      background:#071126;
+      color:#cfefff;
+      padding:22px;
+      text-align:center;
+      border-bottom:6px solid #2fc7ff;
+      box-shadow:0 8px 0 rgba(0,0,0,0.6) inset;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .cabecalho::before {
+      content: "";
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='20' height='20' viewBox='0 0 20 20'%3E%3Crect width='2' height='2' fill='%232fc7ff' fill-opacity='0.1'/%3E%3C/svg%3E");
+      z-index: 0;
+    }
+
+    .cabecalho h1{
+      font-size:16px; 
+      letter-spacing:2px;
+      position: relative;
+      z-index: 1;
+      text-shadow: 2px 2px 0 #001b2b;
+    }
+
+    /* menu */
+    .menu{
+      background:#0b1b2a;
+      padding:12px;
+      text-align:center;
+      border-bottom:4px solid #053147;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+    .menu a{
+      color:#cfefff;
+      margin:0 14px;
+      text-decoration:none;
+      display:inline-block;
+      padding:6px 10px;
+      border:3px solid transparent;
+      transition: all .12s;
+      font-size:11px;
+    }
+    .menu a:hover{
+      color:#001b2b;
+      background:#4fc3f7;
+      border-color:#012034;
+      transform:translateY(-2px);
+    }
+
+    /* corpo */
+    .corpo{
+      flex:1;
+      padding:28px;
+      background: linear-gradient(180deg, rgba(2,6,15,0.6), rgba(0,0,0,0.6)), 
+                  url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='40' height='40' viewBox='0 0 40 40'%3E%3Crect width='40' height='40' fill='%23081125'/%3E%3Cpath d='M0 0L40 40M40 0L0 40' stroke='%23050812' stroke-width='1'/%3E%3C/svg%3E");
+      color:#e6f8ff;
+      font-size:12px;
+      line-height:1.6;
+      text-align:center;
+    }
+
+    /* Conteúdo da página de contato */
+    .contato-container {
+      max-width: 1000px;
+      margin: 0 auto;
+      padding: 20px;
+    }
+
+    .contato-titulo {
+      color: #2fc7ff;
+      font-size: 18px;
+      margin-bottom: 30px;
+      text-shadow: 2px 2px 0 #001b2b;
+    }
+
+    .explicacao {
+      background: rgba(13, 25, 42, 0.8);
+      border: 4px solid #021728;
+      padding: 25px;
+      margin-bottom: 30px;
+      text-align: left;
+    }
+
+    .explicacao h3 {
+      color: #2fc7ff;
+      font-size: 14px;
+      margin-bottom: 15px;
+      text-shadow: 1px 1px 0 #000;
+    }
+
+    .explicacao p {
+      margin-bottom: 15px;
+      line-height: 1.8;
+    }
+
+    .explicacao ul {
+      margin-left: 20px;
+      margin-bottom: 15px;
+    }
+
+    .explicacao li {
+      margin-bottom: 10px;
+    }
+
+    /* Slides */
+    .slides-container {
+      position: relative;
+      max-width: 800px;
+      margin: 0 auto 40px;
+      overflow: hidden;
+      border: 6px solid #021728;
+      background: #0a1424;
+    }
+
+    .slides {
+      display: flex;
+      transition: transform 0.5s ease;
+    }
+
+    .slide {
+      min-width: 100%;
+      padding: 30px;
+      box-sizing: border-box;
+    }
+
+    .slide-titulo {
+      color: #2fc7ff;
+      font-size: 16px;
+      margin-bottom: 20px;
+      text-shadow: 2px 2px 0 #000;
+    }
+
+    .slide-conteudo {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 20px;
+    }
+
+    .slide-imagem {
+      max-width: 100%;
+      height: 200px;
+      object-fit: contain;
+      border: 3px solid #000;
+    }
+
+    .slide-texto {
+      text-align: left;
+      line-height: 1.6;
+    }
+
+    .slide-texto ul {
+      margin-left: 20px;
+      margin-top: 10px;
+    }
+
+    .slide-texto li {
+      margin-bottom: 8px;
+    }
+
+    .controles-slides {
+      display: flex;
+      justify-content: center;
+      gap: 15px;
+      margin-top: 20px;
+    }
+
+    .controle-slide {
+      background: #2fc7ff;
+      color: #001b2b;
+      border: 2px solid #021728;
+      padding: 10px 15px;
+      font-family: 'Press Start 2P', cursive;
+      font-size: 10px;
+      cursor: pointer;
+      transition: all 0.3s;
+    }
+
+    .controle-slide:hover {
+      background: #4fd7ff;
+      transform: translateY(-2px);
+    }
+
+    .controle-slide:disabled {
+      background: #7fa7b8;
+      cursor: not-allowed;
+      transform: none;
+    }
+
+    .indicadores-slides {
+      display: flex;
+      justify-content: center;
+      gap: 10px;
+      margin-top: 15px;
+    }
+
+    .indicador-slide {
+      width: 12px;
+      height: 12px;
+      border-radius: 50%;
+      background: #2a3f5f;
+      cursor: pointer;
+      transition: all 0.3s;
+    }
+
+    .indicador-slide.ativo {
+      background: #2fc7ff;
+    }
+
+    /* Meme */
+    .meme-container {
+      background: rgba(13, 25, 42, 0.8);
+      border: 4px solid #021728;
+      padding: 25px;
+      margin-top: 30px;
+    }
+
+    .meme-titulo {
+      color: #2fc7ff;
+      font-size: 14px;
+      margin-bottom: 15px;
+      text-shadow: 1px 1px 0 #000;
+    }
+
+    .meme-imagem {
+      max-width: 100%;
+      border: 3px solid #000;
+      margin: 15px 0;
+    }
+
+    .meme-legenda {
+      font-size: 10px;
+      color: #7fa7b8;
+      font-style: italic;
+    }
+
+    /* rodapé */
+    .rodape{
+      background:#071126;
+      color:#7fa7b8;
+      text-align:center;
+      padding:14px;
+      border-top:6px solid #2fc7ff;
+      font-size:10px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .rodape::before {
+      content: "";
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='20' height='20' viewBox='0 0 20 20'%3E%3Crect width='2' height='2' fill='%232fc7ff' fill-opacity='0.05'/%3E%3C/svg%3E");
+      z-index: 0;
+    }
+
+    .rodape p {
+      position: relative;
+      z-index: 1;
+    }
+
+    /* Responsividade */
+    @media (max-width: 768px) {
+      .cabecalho h1 { font-size: 14px; }
+      .menu a { margin: 0 8px; font-size: 10px; }
+      .slide-conteudo { flex-direction: column; }
+    }
+
+    @media (max-width: 480px) {
+      .cabecalho h1 { font-size: 12px; }
+      .menu a { display: block; margin: 8px 0; }
+      .corpo { padding: 15px; }
+      .contato-titulo { font-size: 14px; }
+      .slide-titulo { font-size: 12px; }
+    }
+  </style>
+</head>
+<body>
+  <div class="wrapper">
+    <div class="cabecalho">
+      <h1>COMO FOI FEITO O SITE - EXPLICAÇÃO PARA O PROFESSOR RÔMULO</h1>
+    </div>
+
+    <div class="menu">
+      <a href="index.html">INÍCIO</a>
+      <a href="personagens.html">PERSONAGENS</a>
+      <a href="mapa.html">MAPA</a>
+      <a href="galeria.html">GALERIA</a>
+      <a href="contato.html">EXPLICAÇÃO</a>
+<a href="https://store.steampowered.com/app/367520/Hollow_Knight/" target="_blank">COMPRAR JOGO</a>    </div>
+
+
+    <div class="corpo">
+      <div class="contato-container">
+        <h2 class="contato-titulo">EXPLICAÇÃO DO DESENVOLVIMENTO DO SITE</h2>
+        
+        <div class="explicacao">
+          <h3>PARA O PROFESSOR RÔMULO</h3>
+          <p>Olá, Professor Rômulo! Esta página foi criada para explicar como desenvolvi o site sobre Hollow Knight com a ajuda do ChatGPT.</p>
+          <p>Meu nome é Emilly, e este projeto foi uma jornada de aprendizado incrível! Abaixo, explico detalhadamente como cada parte do site foi construída.</p>
+        </div>
+
+        <!-- Slideshow -->
+        <div class="slides-container">
+          <div class="slides" id="slides">
+            <!-- Slide 1 -->
+            <div class="slide">
+              <h3 class="slide-titulo">1. CONCEITO E ESTRUTURA BÁSICA</h3>
+              <div class="slide-conteudo">
+                <div class="slide-texto">
+                  <p>O site foi planejado para ser uma homenagem ao jogo Hollow Knight, com foco na experiência imersiva do usuário.</p>
+                  <p><strong>Estrutura básica:</strong></p>
+                  <ul>
+                    <li>Página inicial com introdução ao jogo</li>
+                    <li>Página de personagens com cards interativos</li>
+                    <li>Mapa interativo de Hallownest</li>
+                    <li>Galeria de imagens oficiais</li>
+                    <li>Página de contato (esta que você está vendo)</li>
+                  </ul>
+                  <p>Todas as páginas seguem um design coerente com a estética do jogo.</p>
+                </div>
+              </div>
+            </div>
+
+            <!-- Slide 2 -->
+            <div class="slide">
+              <h3 class="slide-titulo">2. DESIGN E ESTÉTICA</h3>
+              <div class="slide-conteudo">
+                <div class="slide-texto">
+                  <p>O design foi inspirado diretamente no visual de Hollow Knight:</p>
+                  <ul>
+                    <li><strong>Cores:</strong> Paleta de azuis e tons escuros, remetendo às cavernas de Hallownest</li>
+                    <li><strong>Tipografia:</strong> Fonte "Press Start 2P" para manter o estilo pixel art</li>
+                    <li><strong>Elementos visuais:</strong> Bordas, sombras e efeitos que lembram o jogo</li>
+                    <li><strong>Responsividade:</strong> Layout adaptável para diferentes tamanhos de tela</li>
+                  </ul>
+                  <p>Usei CSS avançado para criar efeitos como hover, transições e animações.</p>
+                </div>
+              </div>
+            </div>
+
+            <!-- Slide 3 -->
+            <div class="slide">
+              <h3 class="slide-titulo">3. PÁGINA DE PERSONAGENS</h3>
+              <div class="slide-conteudo">
+                <div class="slide-texto">
+                  <p>A página de personagens foi uma das mais trabalhadas:</p>
+                  <ul>
+                    <li><strong>Cards interativos:</strong> Cada personagem tem seu próprio card com imagem e descrição</li>
+                    <li><strong>Efeitos visuais:</strong> Hover effects, sombras e transições suaves</li>
+                    <li><strong>Conteúdo:</strong> Informações sobre cada personagem, incluindo falas características</li>
+                    <li><strong>Design responsivo:</strong> Layout que se adapta a diferentes dispositivos</li>
+                  </ul>
+                  <p>Usei Flexbox para organizar os cards de forma dinâmica.</p>
+                </div>
+              </div>
+            </div>
+
+            <!-- Slide 4 -->
+            <div class="slide">
+              <h3 class="slide-titulo">4. MAPA INTERATIVO</h3>
+              <div class="slide-conteudo">
+                <div class="slide-texto">
+                  <p>O mapa interativo foi o elemento mais complexo do site:</p>
+                  <ul>
+                    <li><strong>Expansão ao clicar:</strong> O mapa se expande com animação suave</li>
+                    <li><strong>Detalhes das áreas:</strong> Cada região pode ser clicada para ver informações</li>
+                    <li><strong>Efeito de digitação:</strong> As informações aparecem letra por letra</li>
+                    <li><strong>Navegação intuitiva:</strong> Fácil de usar e entender</li>
+                  </ul>
+                  <p>Implementei isso com JavaScript puro, sem bibliotecas externas.</p>
+                </div>
+              </div>
+            </div>
+
+            <!-- Slide 5 -->
+            <div class="slide">
+              <h3 class="slide-titulo">5. GALERIA DE IMAGENS</h3>
+              <div class="slide-conteudo">
+                <div class="slide-texto">
+                  <p>A galeria apresenta imagens oficiais do jogo:</p>
+                  <ul>
+                    <li><strong>Layout em grid:</strong> Organização visualmente agradável das imagens</li>
+                    <li><strong>Modal de detalhes:</strong> Ao clicar em uma imagem, abre-se um modal com informações</li>
+                    <li><strong>Efeito de tremor:</strong> As imagens tremem levemente ao serem clicadas</li>
+                    <li><strong>Informações detalhadas:</strong> Cada área tem sua descrição, desafios e objetivos</li>
+                  </ul>
+                  <p>Usei CSS Grid para criar o layout responsivo da galeria.</p>
+                </div>
+              </div>
+            </div>
+
+            <!-- Slide 6 -->
+            <div class="slide">
+              <h3 class="slide-titulo">6. DESAFIOS E APRENDIZADOS</h3>
+              <div class="slide-conteudo">
+                <div class="slide-texto">
+                  <p>Durante o desenvolvimento, enfrentei alguns desafios:</p>
+                  <ul>
+                    <li><strong>Curva de aprendizado:</strong> Aprender JavaScript para a interatividade</li>
+                    <li><strong>Design responsivo:</strong> Garantir que o site funcionasse bem em todos os dispositivos</li>
+                    <li><strong>Otimização de performance:</strong> Manter o site rápido mesmo com animações</li>
+                    <li><strong>Compatibilidade:</strong> Testar em diferentes navegadores</li>
+                  </ul>
+                  <p>Superei esses desafios com pesquisa, testes e a ajuda do ChatGPT.</p>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="controles-slides">
+            <button class="controle-slide" id="anterior">ANTERIOR</button>
+            <button class="controle-slide" id="proximo">PRÓXIMO</button>
+          </div>
+
+          <div class="indicadores-slides" id="indicadores">
+            <!-- Os indicadores serão gerados por JavaScript -->
+          </div>
+        </div>
+
+        <!-- Meme engraçado -->
+        <div class="meme-container">
+          <h3 class="meme-titulo">MEME DE HOLLOW KNIGHT PARA O PROFESSOR RÔMULO</h3>
+          <p>Professor, como você é fã de Hollow Knight, queria compartilhar este meme engraçado com o senhor!</p>
+          
+          <div class="meme-imagem-container">
+            <img src="https://i.pinimg.com/originals/cc/ba/d5/ccbad5facca0526cf7422d1d17a50080.gif" alt="Meme de Hollow Knight" class="meme-imagem">
+            <p class="meme-legenda">"Quando o professor pergunta se você terminou o projeto e você lembra que esqueceu da última página"</p>
+          </div>
+          
+          <p>Espero que o senhor tenha gostado da explicação e do meme! Foi um prazer desenvolver este projeto.</p>
+          <p>Atenciosamente,<br><strong>Emilly</strong></p>
+        </div>
+      </div>
+    </div>
+
+    <div class="rodape">
+      <p>Site desenvolvido por Emilly com a ajuda do Deepseek | Todos os direitos reservados © 2025 | Hollow Knight é uma propriedade da Team Cherry</p>
+    </div>
+  </div>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      const slides = document.getElementById('slides');
+      const anteriorBtn = document.getElementById('anterior');
+      const proximoBtn = document.getElementById('proximo');
+      const indicadoresContainer = document.getElementById('indicadores');
+      
+      const totalSlides = document.querySelectorAll('.slide').length;
+      let slideAtual = 0;
+      
+      // Criar indicadores
+      for (let i = 0; i < totalSlides; i++) {
+        const indicador = document.createElement('div');
+        indicador.classList.add('indicador-slide');
+        if (i === 0) indicador.classList.add('ativo');
+        indicador.addEventListener('click', () => irParaSlide(i));
+        indicadoresContainer.appendChild(indicador);
+      }
+      
+      // Atualizar slides
+      function atualizarSlides() {
+        slides.style.transform = `translateX(-${slideAtual * 100}%)`;
+        
+        // Atualizar indicadores
+        document.querySelectorAll('.indicador-slide').forEach((indicador, index) => {
+          if (index === slideAtual) {
+            indicador.classList.add('ativo');
+          } else {
+            indicador.classList.remove('ativo');
+          }
+        });
+        
+        // Atualizar botões
+        anteriorBtn.disabled = slideAtual === 0;
+        proximoBtn.disabled = slideAtual === totalSlides - 1;
+      }
+      
+      // Ir para slide específico
+      function irParaSlide(indice) {
+        slideAtual = indice;
+        atualizarSlides();
+      }
+      
+      // Slide anterior
+      anteriorBtn.addEventListener('click', () => {
+        if (slideAtual > 0) {
+          slideAtual--;
+          atualizarSlides();
+        }
+      });
+      
+      // Próximo slide
+      proximoBtn.addEventListener('click', () => {
+        if (slideAtual < totalSlides - 1) {
+          slideAtual++;
+          atualizarSlides();
+        }
+      });
+      
+      // Inicializar
+      atualizarSlides();
+    });
+  </script>
+</body>
+</html>
